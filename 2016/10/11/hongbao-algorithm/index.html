@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="随想,杂记," />
+  <meta name="keywords" content="算法," />
 
 
 
@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="不为无益之事，何以悦有涯之生
-最近感想颇多有好多想法，需要去实现目前刚搭建好一个日志用的是hexo 感觉不错之前搭jeky好久都没有成功，最后也不了了之前两天看到一个很好的博客，样式简洁，风格清新又想起了这个事情，所幸最后在教程的帮助下，还算比较顺利的搭完所谓千里之行始于足下，希望这是一个好的开始">
+<meta name="description" content="今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，结果我没答上来，所以一直惦记着，恰好今天有时间，鼓捣一下。
+红包基本要求如下：1.人人都有分，不能有人抢到的金额为0；2.金额要随机分布，3.好像也没了">
 <meta property="og:type" content="article">
-<meta property="og:title" content="不为无益之事，何以悦有涯之生">
-<meta property="og:url" content="http://linxiang4200.github.io/2016/10/08/xxl/index.html">
+<meta property="og:title" content="一个红包算法">
+<meta property="og:url" content="http://linxiang4200.github.io/2016/10/11/hongbao-algorithm/index.html">
 <meta property="og:site_name" content="Lin's Lab">
-<meta property="og:description" content="不为无益之事，何以悦有涯之生
-最近感想颇多有好多想法，需要去实现目前刚搭建好一个日志用的是hexo 感觉不错之前搭jeky好久都没有成功，最后也不了了之前两天看到一个很好的博客，样式简洁，风格清新又想起了这个事情，所幸最后在教程的帮助下，还算比较顺利的搭完所谓千里之行始于足下，希望这是一个好的开始">
-<meta property="og:updated_time" content="2016-10-09T09:12:23.000Z">
+<meta property="og:description" content="今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，结果我没答上来，所以一直惦记着，恰好今天有时间，鼓捣一下。
+红包基本要求如下：1.人人都有分，不能有人抢到的金额为0；2.金额要随机分布，3.好像也没了">
+<meta property="og:updated_time" content="2016-10-11T08:11:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="不为无益之事，何以悦有涯之生">
-<meta name="twitter:description" content="不为无益之事，何以悦有涯之生
-最近感想颇多有好多想法，需要去实现目前刚搭建好一个日志用的是hexo 感觉不错之前搭jeky好久都没有成功，最后也不了了之前两天看到一个很好的博客，样式简洁，风格清新又想起了这个事情，所幸最后在教程的帮助下，还算比较顺利的搭完所谓千里之行始于足下，希望这是一个好的开始">
+<meta name="twitter:title" content="一个红包算法">
+<meta name="twitter:description" content="今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，结果我没答上来，所以一直惦记着，恰好今天有时间，鼓捣一下。
+红包基本要求如下：1.人人都有分，不能有人抢到的金额为0；2.金额要随机分布，3.好像也没了">
 
 
 
@@ -117,10 +117,10 @@
 
 
 
-  <link rel="canonical" href="http://linxiang4200.github.io/2016/10/08/xxl/"/>
+  <link rel="canonical" href="http://linxiang4200.github.io/2016/10/11/hongbao-algorithm/"/>
 
 
-  <title> 不为无益之事，何以悦有涯之生 | Lin's Lab </title>
+  <title> 一个红包算法 | Lin's Lab </title>
 </head>
 
 <body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
@@ -270,7 +270,7 @@
             
             
               
-                不为无益之事，何以悦有涯之生
+                一个红包算法
               
             
           </h1>
@@ -282,8 +282,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-10-08T17:24:56+08:00" content="2016-10-08">
-              2016-10-08
+            <time itemprop="dateCreated" datetime="2016-10-11T15:20:19+08:00" content="2016-10-11">
+              2016-10-11
             </time>
           </span>
 
@@ -296,8 +296,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/随想/" itemprop="url" rel="index">
-                    <span itemprop="name">随想</span>
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
                   </a>
                 </span>
 
@@ -312,8 +312,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/10/08/xxl/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/08/xxl/" itemprop="commentsCount"></span>
+                <a href="/2016/10/11/hongbao-algorithm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/11/hongbao-algorithm/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -336,11 +336,14 @@
       
 
       
-        <p>不为无益之事，何以悦有涯之生</p>
-<h3 id="最近感想颇多"><a href="#最近感想颇多" class="headerlink" title="最近感想颇多"></a>最近感想颇多</h3><p>有好多想法，需要去实现<br>目前刚搭建好一个日志<br>用的是hexo 感觉不错<br>之前搭jeky好久都没有成功，最后也不了了之<br>前两天看到一个很好的博客，样式简洁，风格清新<br>又想起了这个事情，所幸最后在教程的帮助下，还算比较顺利的搭完<br>所谓千里之行始于足下，希望这是一个好的开始</p>
+        <p>今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，<br>结果我没答上来，所以一直惦记着，恰好今天有时间，鼓捣一下。</p>
+<p>红包基本要求如下：<br>1.人人都有分，不能有人抢到的金额为0；<br>2.金额要随机分布，<br>3.好像也没了</p>
 <a id="more"></a>
-<p>参考资料：<br>hexo github 博客搭建<br><a href="http://www.tuicool.com/articles/ueI7naV" target="_blank" rel="external">http://www.tuicool.com/articles/ueI7naV</a></p>
-<p>hexo next 主题使用帮助<br><a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="external">http://theme-next.iissnan.com/getting-started.html</a></p>
+<p>其实看着简单，但要真实现起来还是有点麻烦，之前吃饭的时候大家聊过几句<br>好像没什么太好的办法，后来经高人提醒，才有了可落地的思路。<br>先确定好最小单位，这里偷懒用的是分，因为实际上红包最小单位也是分😄<br>这里拿1毛钱分给三个人为例。</p>
+<p>基本思路如下：<br>每个人先分1分钱，剩余7分，<br>然后把剩下的钱想象成一根绳子，怎么把一根绳子分给三个人呢？</p>
+<p>###切两刀!!!对，就是这么简单粗暴，<br>然后在剩下的区间内生成两个随机数，再用两个数分割成三个区间，加到原来的1分钱中，<br>最后随机打乱一下顺序，即可</p>
+<p>代码如下，有点糙，各位看官勿怪：）<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">$num = <span class="number">10</span>;<span class="comment">#人数</span></div><div class="line">$money = <span class="number">100</span>;<span class="comment">#金额，单位是分</span></div><div class="line"></div><div class="line">$ma = hongbao($num, $money);</div><div class="line">$all = (array_sum($ma))/<span class="number">100</span>;</div><div class="line"></div><div class="line"><span class="keyword">echo</span> <span class="string">'总金额：'</span>.$all.<span class="string">'元，被'</span>.$num.<span class="string">'个人瓜分：'</span>;</div><div class="line">    <span class="keyword">echo</span> PHP_EOL;</div><div class="line"><span class="keyword">foreach</span>($ma <span class="keyword">as</span> $key =&gt; $s)&#123;</div><div class="line">    <span class="keyword">echo</span> <span class="string">"第"</span>.($key+<span class="number">1</span>).<span class="string">"个人："</span>.($s/<span class="number">100</span>);</div><div class="line">    <span class="keyword">echo</span> PHP_EOL;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">hongbao</span><span class="params">($num, $money)</span></span>&#123;</div><div class="line">    $ma = <span class="keyword">array</span>();</div><div class="line">    $ma = array_pad($ma,$num,<span class="number">1</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span>($money==$num) <span class="keyword">return</span> $ma;</div><div class="line"></div><div class="line">    $lastmoney = $money-$num;</div><div class="line">    $arr = <span class="keyword">array</span>();</div><div class="line">    <span class="keyword">for</span>($i=<span class="number">1</span>;$i&lt;$num;$i++)&#123;</div><div class="line">        $rand = rand(<span class="number">1</span>,$lastmoney<span class="number">-1</span>);</div><div class="line">        $arr[] = $rand;</div><div class="line">    &#125;</div><div class="line">    sort($arr);</div><div class="line">    array_push($arr,$lastmoney);</div><div class="line">    $pl[<span class="number">0</span>] = $arr[<span class="string">'0'</span>];</div><div class="line">    <span class="keyword">for</span>($i=<span class="number">0</span>;$i&lt;$num;$i++)&#123;</div><div class="line">        $th = $arr[$i+<span class="number">1</span>] - $arr[$i];</div><div class="line">        $pl[] = $th;</div><div class="line">    &#125;</div><div class="line">    array_pop($pl);</div><div class="line">    <span class="keyword">foreach</span>($pl <span class="keyword">as</span> $key =&gt; $r)&#123;</div><div class="line">        $ma[$key] += $r;</div><div class="line">    &#125;</div><div class="line">    shuffle($ma);</div><div class="line">    <span class="keyword">return</span> $ma;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其实这个还是花了点时间的，最开始是直接用随机数分割的方式，但有点问题，就是1毛钱分9个人这种时候，会有人分到的金额为0<br>这是因为随机数的区间重合导致<br>后来才想到每人先分最小单位，再剩余的大家瓜分这种形式，亲测效果良好<br>干了这么多年码农，算法一直是弱项，有点惭愧，以后要加强学习才行。</p>
 
       
     </div>
@@ -363,9 +366,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/随想/" rel="tag">#随想</a>
-          
-            <a href="/tags/杂记/" rel="tag">#杂记</a>
+            <a href="/tags/算法/" rel="tag">#算法</a>
           
         </div>
       
@@ -374,13 +375,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/10/08/xxl/" rel="next" title="不为无益之事，何以悦有涯之生">
+                <i class="fa fa-chevron-left"></i> 不为无益之事，何以悦有涯之生
+              </a>
+            
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/10/11/hongbao-algorithm/" rel="prev" title="一个红包算法">
-                一个红包算法 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -406,8 +407,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/10/08/xxl/"
-           data-title="不为无益之事，何以悦有涯之生" data-url="http://linxiang4200.github.io/2016/10/08/xxl/">
+      <div class="ds-thread" data-thread-key="2016/10/11/hongbao-algorithm/"
+           data-title="一个红包算法" data-url="http://linxiang4200.github.io/2016/10/11/hongbao-algorithm/">
       </div>
     
   </div>
@@ -498,7 +499,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#最近感想颇多"><span class="nav-number">1.</span> <span class="nav-text">最近感想颇多</span></a></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
         </section>

@@ -84,15 +84,25 @@
 
 
 
-<meta name="description" content="wahahaaaaa">
+<meta name="description" content="今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，结果我没答上来，所以一直惦记着在，恰好今天有时间，鼓捣一下。
+基本思路如下：先确定好最小单位，这里用的是分，因为实际上红包最小单位也是分😄每个人先分1分钱，比如1毛钱，3个人分，每个人先分1分钱剩余7分，然后把剩下的钱想象成一根绳子，怎么把一根绳子分给三个人呢？
+
+切两刀对，在剩下的区间内随机两个数，然后用">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Lin's Lab">
-<meta property="og:url" content="http://linxiang4200.github.io/tags/随想/index.html">
+<meta property="og:title" content="微信红包算法">
+<meta property="og:url" content="http://linxiang4200.github.io/hongbao-algorithm/index.html">
 <meta property="og:site_name" content="Lin's Lab">
-<meta property="og:description" content="wahahaaaaa">
+<meta property="og:description" content="今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，结果我没答上来，所以一直惦记着在，恰好今天有时间，鼓捣一下。
+基本思路如下：先确定好最小单位，这里用的是分，因为实际上红包最小单位也是分😄每个人先分1分钱，比如1毛钱，3个人分，每个人先分1分钱剩余7分，然后把剩下的钱想象成一根绳子，怎么把一根绳子分给三个人呢？
+
+切两刀对，在剩下的区间内随机两个数，然后用">
+<meta property="og:updated_time" content="2016-10-11T07:34:14.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Lin's Lab">
-<meta name="twitter:description" content="wahahaaaaa">
+<meta name="twitter:title" content="微信红包算法">
+<meta name="twitter:description" content="今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，结果我没答上来，所以一直惦记着在，恰好今天有时间，鼓捣一下。
+基本思路如下：先确定好最小单位，这里用的是分，因为实际上红包最小单位也是分😄每个人先分1分钱，比如1毛钱，3个人分，每个人先分1分钱剩余7分，然后把剩下的钱想象成一根绳子，怎么把一根绳子分给三个人呢？
+
+切两刀对，在剩下的区间内随机两个数，然后用">
 
 
 
@@ -113,10 +123,16 @@
 
 
 
-  <link rel="canonical" href="http://linxiang4200.github.io/tags/随想/"/>
+  <link rel="canonical" href="http://linxiang4200.github.io/hongbao-algorithm/"/>
 
 
-  <title> 标签: 随想 | Lin's Lab </title>
+  <title>
+  
+
+  
+    微信红包算法 | Lin's Lab
+  
+</title>
 </head>
 
 <body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
@@ -245,46 +261,18 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-collapse">
-    <div class="collection-title">
-      <h2 >
-        随想
-        <small>标签</small>
-      </h2>
-    </div>
-
+  <div id="posts" class="posts-expand">
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="//schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/10/08/xxl/" itemprop="url">
-              
-                <span itemprop="name">不为无益之事，何以悦有涯之生</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-10-08T17:24:56+08:00"
-              content="2016-10-08" >
-          10-08
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+    
+      <p>今天没事琢磨了一下微信的红包算法，想起这个的原因是原来有一次面试的时候面试官问了这个问题，<br>结果我没答上来，所以一直惦记着在，恰好今天有时间，鼓捣一下。</p>
+<p>基本思路如下：<br>先确定好最小单位，这里用的是分，因为实际上红包最小单位也是分😄<br>每个人先分1分钱，比如1毛钱，3个人分，每个人先分1分钱<br>剩余7分，然后把剩下的钱想象成一根绳子，怎么把一根绳子分给三个人呢？</p>
+<blockquote>
+<p>切两刀<br>对，在剩下的区间内随机两个数，然后用两个数分割成三个区间，加到原来的1分钱中，<br>最后随机打乱一下顺序，即可</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">$num = <span class="number">10</span>;<span class="comment">#人数</span></div><div class="line">$money = <span class="number">100</span>;<span class="comment">#金额，单位是分</span></div><div class="line"></div><div class="line">$ma = hongbao($num, $money);</div><div class="line">$all = (array_sum($ma))/<span class="number">100</span>;</div><div class="line"></div><div class="line"><span class="keyword">echo</span> <span class="string">'总金额：'</span>.$all.<span class="string">'元，被'</span>.$num.<span class="string">'个人瓜分：'</span>;</div><div class="line">    <span class="keyword">echo</span> PHP_EOL;</div><div class="line"><span class="keyword">foreach</span>($ma <span class="keyword">as</span> $key =&gt; $s)&#123;</div><div class="line">    <span class="keyword">echo</span> <span class="string">"第"</span>.($key+<span class="number">1</span>).<span class="string">"个人："</span>.($s/<span class="number">100</span>);</div><div class="line">    <span class="keyword">echo</span> PHP_EOL;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">hongbao</span><span class="params">($num, $money)</span></span>&#123;</div><div class="line">    $ma = <span class="keyword">array</span>();</div><div class="line">    $ma = array_pad($ma,$num,<span class="number">1</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span>($money==$num) <span class="keyword">return</span> $ma;</div><div class="line"></div><div class="line">    $lastmoney = $money-$num;</div><div class="line">    $arr = <span class="keyword">array</span>();</div><div class="line">    <span class="keyword">for</span>($i=<span class="number">1</span>;$i&lt;$num;$i++)&#123;</div><div class="line">        $rand = rand(<span class="number">1</span>,$lastmoney<span class="number">-1</span>);</div><div class="line">        $arr[] = $rand;</div><div class="line">    &#125;</div><div class="line">    sort($arr);</div><div class="line">    array_push($arr,$lastmoney);</div><div class="line">    $pl[<span class="number">0</span>] = $arr[<span class="string">'0'</span>];</div><div class="line">    <span class="keyword">for</span>($i=<span class="number">0</span>;$i&lt;$num;$i++)&#123;</div><div class="line">        $th = $arr[$i+<span class="number">1</span>] - $arr[$i];</div><div class="line">        $pl[] = $th;</div><div class="line">    &#125;</div><div class="line">    array_pop($pl);</div><div class="line">    <span class="keyword">foreach</span>($pl <span class="keyword">as</span> $key =&gt; $r)&#123;</div><div class="line">        $ma[$key] += $r;</div><div class="line">    &#125;</div><div class="line">    shuffle($ma);</div><div class="line">    <span class="keyword">return</span> $ma;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
     
   </div>
-
-  
 
 
           </div>
@@ -292,6 +280,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="hongbao-algorithm/index.html"
+           data-title="微信红包算法" data-url="http://linxiang4200.github.io/hongbao-algorithm/index.html">
+      </div>
+    
+  </div>
+
 
         </div>
         
