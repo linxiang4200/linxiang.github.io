@@ -1,0 +1,687 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="算法," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="首先问一个问题：
+
+给你一个坐标地址，如何在附近2KM以内的商家中，找出离你最近的TOP50？
+
+最直接的办法就是用给定的坐标计算与商家坐标之间的距离，然后排序即可。可是，一般有这个需求的应用场景都是如地图，点评之类有非常多商家的应用，POI数量可能好几千万，甚至几亿，这么大量，直接算肯定不现实。所以，首先要做的是缩运算的数量级，那么，怎么做呢？这就引入了我们今天要讲的geohash算法。
+geo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="geohash算法原理及实现方式">
+<meta property="og:url" content="http://linxiang4200.github.io/2016/11/16/geohash/index.html">
+<meta property="og:site_name" content="Lin's Lab">
+<meta property="og:description" content="首先问一个问题：
+
+给你一个坐标地址，如何在附近2KM以内的商家中，找出离你最近的TOP50？
+
+最直接的办法就是用给定的坐标计算与商家坐标之间的距离，然后排序即可。可是，一般有这个需求的应用场景都是如地图，点评之类有非常多商家的应用，POI数量可能好几千万，甚至几亿，这么大量，直接算肯定不现实。所以，首先要做的是缩运算的数量级，那么，怎么做呢？这就引入了我们今天要讲的geohash算法。
+geo">
+<meta property="og:updated_time" content="2016-11-16T09:20:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="geohash算法原理及实现方式">
+<meta name="twitter:description" content="首先问一个问题：
+
+给你一个坐标地址，如何在附近2KM以内的商家中，找出离你最近的TOP50？
+
+最直接的办法就是用给定的坐标计算与商家坐标之间的距离，然后排序即可。可是，一般有这个需求的应用场景都是如地图，点评之类有非常多商家的应用，POI数量可能好几千万，甚至几亿，这么大量，直接算肯定不现实。所以，首先要做的是缩运算的数量级，那么，怎么做呢？这就引入了我们今天要讲的geohash算法。
+geo">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://linxiang4200.github.io/2016/11/16/geohash/"/>
+
+
+  <title> geohash算法原理及实现方式 | Lin's Lab </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a26e26b4e094943f7bb465782f56c7d8";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Lin's Lab</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                geohash算法原理及实现方式
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-16T16:31:14+08:00" content="2016-11-16">
+              2016-11-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/16/geohash/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/16/geohash/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>首先问一个问题：</p>
+<blockquote>
+<p>给你一个坐标地址，如何在附近2KM以内的商家中，找出离你最近的TOP50？</p>
+</blockquote>
+<p>最直接的办法就是用给定的坐标计算与商家坐标之间的距离，然后排序即可。<br>可是，一般有这个需求的应用场景都是如地图，点评之类有非常多商家的应用，POI数量可能好几千万，甚至几亿，这么大量，直接算肯定不现实。<br>所以，首先要做的是缩运算的数量级，那么，怎么做呢？<br>这就引入了我们今天要讲的geohash算法。</p>
+<h3 id="geohash有以下几个特点："><a href="#geohash有以下几个特点：" class="headerlink" title="geohash有以下几个特点："></a>geohash有以下几个特点：</h3><p>首先，geohash用一个字符串表示经度和纬度两个坐标。某些情况下无法在两列上同时应用索引 （例如MySQL 4之前的版本，Google App Engine的数据层等），利用geohash，只需在一列上应用索引即可。</p>
+<p>其次，geohash表示的并不是一个点，而是一个矩形区域。比如编码wx4g0ec19，它表示的是一个矩形区域。 使用者可以发布地址编码，既能表明自己位于北海公园附近，又不至于暴露自己的精确坐标，有助于隐私保护。</p>
+<p>第三，编码的前缀可以表示更大的区域。例如wx4g0ec1，它的前缀wx4g0e表示包含编码wx4g0ec1在内的更大范围。 这个特性可以用于附近地点搜索。首先根据用户当前坐标计算geohash（例如wx4g0ec1）然后取其前缀进行查询<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">（SELECT * FROM place WHERE geohash LIKE &apos;wx4g0e%&apos;）</div></pre></td></tr></table></figure></p>
+<p>即可查询附近的所有地点。</p>
+<p>Geohash比直接用经纬度的高效很多。</p>
+<a id="more"></a>
+<h3 id="Geohash的原理"><a href="#Geohash的原理" class="headerlink" title="Geohash的原理"></a>Geohash的原理</h3><p>Geohash的最简单的解释就是：将一个经纬度信息，转换成一个可以排序，可以比较的字符串编码</p>
+<p>首先将纬度范围(-90, 90)平分成两个区间(-90,0)、(0, 90)，如果目标纬度位于前一个区间，则编码为0，否则编码为1。</p>
+<p>由于39.92324属于(0, 90)，所以取编码为1。</p>
+<p>然后再将(0, 90)分成 (0, 45), (45, 90)两个区间，而39.92324位于(0, 45)，所以编码为0。</p>
+<p>以此类推，直到精度符合要求为止，得到纬度编码为1011 1000 1100 0111 1001。</p>
+<table border="1" cellspacing="1" cellpadding="0"><tbody><tr><td>纬度范围</td><td>划分区间0</td><td>划分区间1</td><td>39.92324所属区间</td></tr><tr><td>(-90, 90)</td><td>(-90, 0.0)</td><td>(0.0, 90)</td><td>1</td></tr><tr><td>(0.0, 90)</td><td>(0.0, 45.0)</td><td>(45.0, 90)</td><td>0</td></tr><tr><td>(0.0, 45.0)</td><td>(0.0, 22.5)</td><td>(22.5, 45.0)</td><td>1</td></tr><tr><td>(22.5, 45.0)</td><td>(22.5, 33.75)</td><td>(33.75, 45.0)</td><td>1</td></tr><tr><td>(33.75, 45.0)</td><td>(33.75, 39.375)</td><td>(39.375, 45.0)</td><td>1</td></tr><tr><td>(39.375, 45.0)</td><td>(39.375, 42.1875)</td><td>(42.1875, 45.0)</td><td>0</td></tr><tr><td>(39.375, 42.1875)</td><td>(39.375, 40.7812)</td><td>(40.7812, 42.1875)</td><td>0</td></tr><tr><td>(39.375, 40.7812)</td><td>(39.375, 40.0781)</td><td>(40.0781, 40.7812)</td><td>0</td></tr><tr><td>(39.375, 40.0781)</td><td>(39.375, 39.7265)</td><td>(39.7265, 40.0781)</td><td>1</td></tr><tr><td>(39.7265, 40.0781)</td><td>(39.7265, 39.9023)</td><td>(39.9023, 40.0781)</td><td>1</td></tr><tr><td>(39.9023, 40.0781)</td><td>(39.9023, 39.9902)</td><td>(39.9902, 40.0781)</td><td>0</td></tr><tr><td>(39.9023, 39.9902)</td><td>(39.9023, 39.9462)</td><td>(39.9462, 39.9902)</td><td>0</td></tr><tr><td>(39.9023, 39.9462)</td><td>(39.9023, 39.9243)</td><td>(39.9243, 39.9462)</td><td>0</td></tr><tr><td>(39.9023, 39.9243)</td><td>(39.9023, 39.9133)</td><td>(39.9133, 39.9243)</td><td>1</td></tr><tr><td>(39.9133, 39.9243)</td><td>(39.9133, 39.9188)</td><td>(39.9188, 39.9243)</td><td>1</td></tr><tr><td>(39.9188, 39.9243)</td><td>(39.9188, 39.9215)</td><td>(39.9215, 39.9243)</td><td>1</td></tr></tbody></table>
+
+
+
+<p>经度也用同样的算法，对(-180, 180)依次细分，得到116.3906的编码为1101 0010 1100 0100 0100。</p>
+<table border="1" cellspacing="1" cellpadding="0"><tbody><tr><td>经度范围</td><td>划分区间0</td><td>划分区间1</td><td>116.3906所属区间</td></tr><tr><td>(-180, 180)</td><td>(-180, 0.0)</td><td>(0.0, 180)</td><td>1</td></tr><tr><td>(0.0, 180)</td><td>(0.0, 90.0)</td><td>(90.0, 180)</td><td>1</td></tr><tr><td>(90.0, 180)</td><td>(90.0, 135.0)</td><td>(135.0, 180)</td><td>0</td></tr><tr><td>(90.0, 135.0)</td><td>(90.0, 112.5)</td><td>(112.5, 135.0)</td><td>1</td></tr><tr><td>(112.5, 135.0)</td><td>(112.5, 123.75)</td><td>(123.75, 135.0)</td><td>0</td></tr><tr><td>(112.5, 123.75)</td><td>(112.5, 118.125)</td><td>(118.125, 123.75)</td><td>0</td></tr><tr><td>(112.5, 118.125)</td><td>(112.5, 115.312)</td><td>(115.312, 118.125)</td><td>1</td></tr><tr><td>(115.312, 118.125)</td><td>(115.312, 116.718)</td><td>(116.718, 118.125)</td><td>0</td></tr><tr><td>(115.312, 116.718)</td><td>(115.312, 116.015)</td><td>(116.015, 116.718)</td><td>1</td></tr><tr><td>(116.015, 116.718)</td><td>(116.015, 116.367)</td><td>(116.367, 116.718)</td><td>1</td></tr><tr><td>(116.367, 116.718)</td><td>(116.367, 116.542)</td><td>(116.542, 116.718)</td><td>0</td></tr><tr><td>(116.367, 116.542)</td><td>(116.367, 116.455)</td><td>(116.455, 116.542)</td><td>0</td></tr><tr><td>(116.367, 116.455)</td><td>(116.367, 116.411)</td><td>(116.411, 116.455)</td><td>0</td></tr><tr><td>(116.367, 116.411)</td><td>(116.367, 116.389)</td><td>(116.389, 116.411)</td><td>1</td></tr><tr><td>(116.389, 116.411)</td><td>(116.389, 116.400)</td><td>(116.400, 116.411)</td><td>0</td></tr><tr><td>(116.389, 116.400)</td><td>(116.389, 116.394)</td><td>(116.394, 116.400)</td><td>0</td></tr></tbody></table>
+
+<p>接下来将经度和纬度的编码合并，奇数位是纬度，偶数位是经度，得到编码 11100 11101 00100 01111 00000 01101 01011 00001。</p>
+<p>最后，用0-9、b-z（去掉a, i, l, o）这32个字母进行base32编码，得到(39.92324, 116.3906)的编码为wx4g0ec1。</p>
+<table border="1" cellspacing="1" cellpadding="0" style="font-size:8px;"><br><tbody><tr><td width="50px;">十进制</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr><tr><td>base32</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td></tr><tr><td>十进制</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td></tr><tr><td>base32</td><td>h</td><td>j</td><td>k</td><td>m</td><td>n</td><td>p</td><td>q</td><td>r</td><td>s</td><td>t</td><td>u</td><td>v</td><td>w</td><td>x</td><td>y</td><td>z</td></tr></tbody></table>
+
+<p>解码算法与编码算法相反，先进行base32解码，然后分离出经纬度，最后根据二进制编码对经纬度范围进行细分即可，这里不再赘述。</p>
+<p>实现代码：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Geohash generation class</div><div class="line"> * http://blog.dixo.net/downloads/</div><div class="line"> *</div><div class="line"> * This file copyright (C) 2008 Paul Dixon (paul<span class="doctag">@elphin</span>.com)</div><div class="line"> *</div><div class="line"> * This program is free software; you can redistribute it and/or</div><div class="line"> * modify it under the terms of the GNU General Public License</div><div class="line"> * as published by the Free Software Foundation; either version 3</div><div class="line"> * of the License, or (at your option) any later version.</div><div class="line"> *</div><div class="line"> * This program is distributed in the hope that it will be useful,</div><div class="line"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</div><div class="line"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</div><div class="line"> * GNU General Public License for more details.</div><div class="line"> *</div><div class="line"> * You should have received a copy of the GNU General Public License</div><div class="line"> * along with this program; if not, write to the Free Software</div><div class="line"> * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.</div><div class="line"> */</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line">* Encode and decode geohashes</div><div class="line">*</div><div class="line">*/</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Geohash</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">private</span> $coding=<span class="string">"0123456789bcdefghjkmnpqrstuvwxyz"</span>;</div><div class="line">    <span class="keyword">private</span> $codingMap=<span class="keyword">array</span>();</div><div class="line">    </div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">Geohash</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="comment">//build map from encoding char to 0 padded bitfield</span></div><div class="line">        <span class="keyword">for</span>($i=<span class="number">0</span>; $i&lt;<span class="number">32</span>; $i++)</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">$this</span>-&gt;codingMap[substr(<span class="keyword">$this</span>-&gt;coding,$i,<span class="number">1</span>)]=str_pad(decbin($i), <span class="number">5</span>, <span class="string">"0"</span>, STR_PAD_LEFT);</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">/**</span></div><div class="line">    * Decode a geohash and return an array with decimal lat,long in it</div><div class="line">    */</div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">decode</span><span class="params">($hash)</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="comment">//decode hash into binary string</span></div><div class="line">        $binary=<span class="string">""</span>;</div><div class="line">        $hl=strlen($hash);</div><div class="line">        <span class="keyword">for</span>($i=<span class="number">0</span>; $i&lt;$hl; $i++)</div><div class="line">        &#123;</div><div class="line">            $binary.=<span class="keyword">$this</span>-&gt;codingMap[substr($hash,$i,<span class="number">1</span>)];</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        <span class="comment">//split the binary into lat and log binary strings</span></div><div class="line">        $bl=strlen($binary);</div><div class="line">        $blat=<span class="string">""</span>;</div><div class="line">        $blong=<span class="string">""</span>;</div><div class="line">        <span class="keyword">for</span> ($i=<span class="number">0</span>; $i&lt;$bl; $i++)</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">if</span> ($i%<span class="number">2</span>)</div><div class="line">                $blat=$blat.substr($binary,$i,<span class="number">1</span>);</div><div class="line">            <span class="keyword">else</span></div><div class="line">                $blong=$blong.substr($binary,$i,<span class="number">1</span>);</div><div class="line">            </div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        <span class="comment">//now concert to decimal</span></div><div class="line">        $lat=<span class="keyword">$this</span>-&gt;binDecode($blat,<span class="number">-90</span>,<span class="number">90</span>);</div><div class="line">        $long=<span class="keyword">$this</span>-&gt;binDecode($blong,<span class="number">-180</span>,<span class="number">180</span>);</div><div class="line">        </div><div class="line">        <span class="comment">//figure out how precise the bit count makes this calculation</span></div><div class="line">        $latErr=<span class="keyword">$this</span>-&gt;calcError(strlen($blat),<span class="number">-90</span>,<span class="number">90</span>);</div><div class="line">        $longErr=<span class="keyword">$this</span>-&gt;calcError(strlen($blong),<span class="number">-180</span>,<span class="number">180</span>);</div><div class="line">                </div><div class="line">        <span class="comment">//how many decimal places should we use? There's a little art to</span></div><div class="line">        <span class="comment">//this to ensure I get the same roundings as geohash.org</span></div><div class="line">        $latPlaces=max(<span class="number">1</span>, -round(log10($latErr))) - <span class="number">1</span>;</div><div class="line">        $longPlaces=max(<span class="number">1</span>, -round(log10($longErr))) - <span class="number">1</span>;</div><div class="line">        </div><div class="line">        <span class="comment">//round it</span></div><div class="line">        $lat=round($lat, $latPlaces);</div><div class="line">        $long=round($long, $longPlaces);</div><div class="line">        </div><div class="line">        <span class="keyword">return</span> <span class="keyword">array</span>($lat,$long);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    </div><div class="line">    <span class="comment">/**</span></div><div class="line">    * Encode a hash from given lat and long</div><div class="line">    */</div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">encode</span><span class="params">($lat,$long)</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="comment">//how many bits does latitude need?    </span></div><div class="line">        $plat=<span class="keyword">$this</span>-&gt;precision($lat);</div><div class="line">        $latbits=<span class="number">1</span>;</div><div class="line">        $err=<span class="number">45</span>;</div><div class="line">        <span class="keyword">while</span>($err&gt;$plat)</div><div class="line">        &#123;</div><div class="line">            $latbits++;</div><div class="line">            $err/=<span class="number">2</span>;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        <span class="comment">//how many bits does longitude need?</span></div><div class="line">        $plong=<span class="keyword">$this</span>-&gt;precision($long);</div><div class="line">        $longbits=<span class="number">1</span>;</div><div class="line">        $err=<span class="number">90</span>;</div><div class="line">        <span class="keyword">while</span>($err&gt;$plong)</div><div class="line">        &#123;</div><div class="line">            $longbits++;</div><div class="line">            $err/=<span class="number">2</span>;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        <span class="comment">//bit counts need to be equal</span></div><div class="line">        $bits=max($latbits,$longbits);</div><div class="line">        </div><div class="line">        <span class="comment">//as the hash create bits in groups of 5, lets not</span></div><div class="line">        <span class="comment">//waste any bits - lets bulk it up to a multiple of 5</span></div><div class="line">        <span class="comment">//and favour the longitude for any odd bits</span></div><div class="line">        $longbits=$bits;</div><div class="line">        $latbits=$bits;</div><div class="line">        $addlong=<span class="number">1</span>;</div><div class="line">        <span class="keyword">while</span> (($longbits+$latbits)%<span class="number">5</span> != <span class="number">0</span>)</div><div class="line">        &#123;</div><div class="line">            $longbits+=$addlong;</div><div class="line">            $latbits+=!$addlong;</div><div class="line">            $addlong=!$addlong;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        </div><div class="line">        <span class="comment">//encode each as binary string</span></div><div class="line">        $blat=<span class="keyword">$this</span>-&gt;binEncode($lat,<span class="number">-90</span>,<span class="number">90</span>, $latbits);</div><div class="line">        $blong=<span class="keyword">$this</span>-&gt;binEncode($long,<span class="number">-180</span>,<span class="number">180</span>,$longbits);</div><div class="line">        </div><div class="line">        <span class="comment">//merge lat and long together</span></div><div class="line">        $binary=<span class="string">""</span>;</div><div class="line">        $uselong=<span class="number">1</span>;</div><div class="line">        <span class="keyword">while</span> (strlen($blat)+strlen($blong))</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">if</span> ($uselong)</div><div class="line">            &#123;</div><div class="line">                $binary=$binary.substr($blong,<span class="number">0</span>,<span class="number">1</span>);</div><div class="line">                $blong=substr($blong,<span class="number">1</span>);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span></div><div class="line">            &#123;</div><div class="line">                $binary=$binary.substr($blat,<span class="number">0</span>,<span class="number">1</span>);</div><div class="line">                $blat=substr($blat,<span class="number">1</span>);</div><div class="line">            &#125;</div><div class="line">            $uselong=!$uselong;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        <span class="comment">//convert binary string to hash</span></div><div class="line">        $hash=<span class="string">""</span>;</div><div class="line">        <span class="keyword">for</span> ($i=<span class="number">0</span>; $i&lt;strlen($binary); $i+=<span class="number">5</span>)</div><div class="line">        &#123;</div><div class="line">            $n=bindec(substr($binary,$i,<span class="number">5</span>));</div><div class="line">            $hash=$hash.<span class="keyword">$this</span>-&gt;coding[$n];</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        </div><div class="line">        <span class="keyword">return</span> $hash;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">/**</span></div><div class="line">    * What's the maximum error for $bits bits covering a range $min to $max</div><div class="line">    */</div><div class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">calcError</span><span class="params">($bits,$min,$max)</span></span></div><div class="line">    &#123;</div><div class="line">        $err=($max-$min)/<span class="number">2</span>;</div><div class="line">        <span class="keyword">while</span> ($bits--)</div><div class="line">            $err/=<span class="number">2</span>;</div><div class="line">        <span class="keyword">return</span> $err;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">/*</span></div><div class="line">    * returns precision of number</div><div class="line">    * precision of 42 is 0.5</div><div class="line">    * precision of 42.4 is 0.05</div><div class="line">    * precision of 42.41 is 0.005 etc</div><div class="line">    */</div><div class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">precision</span><span class="params">($number)</span></span></div><div class="line">    &#123;</div><div class="line">        $precision=<span class="number">0</span>;</div><div class="line">        $pt=strpos($number,<span class="string">'.'</span>);</div><div class="line">        <span class="keyword">if</span> ($pt!==<span class="keyword">false</span>)</div><div class="line">        &#123;</div><div class="line">            $precision=-(strlen($number)-$pt<span class="number">-1</span>);</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        <span class="keyword">return</span> pow(<span class="number">10</span>,$precision)/<span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    </div><div class="line">    <span class="comment">/**</span></div><div class="line">    * create binary encoding of number as detailed in http://en.wikipedia.org/wiki/Geohash#Example</div><div class="line">    * removing the tail recursion is left an exercise for the reader</div><div class="line">    */</div><div class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">binEncode</span><span class="params">($number, $min, $max, $bitcount)</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span> ($bitcount==<span class="number">0</span>)</div><div class="line">            <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">        </div><div class="line">        <span class="comment">#echo "$bitcount: $min $max&lt;br&gt;";</span></div><div class="line">            </div><div class="line">        <span class="comment">//this is our mid point - we will produce a bit to say</span></div><div class="line">        <span class="comment">//whether $number is above or below this mid point</span></div><div class="line">        $mid=($min+$max)/<span class="number">2</span>;</div><div class="line">        <span class="keyword">if</span> ($number&gt;$mid)</div><div class="line">            <span class="keyword">return</span> <span class="string">"1"</span>.<span class="keyword">$this</span>-&gt;binEncode($number, $mid, $max,$bitcount<span class="number">-1</span>);</div><div class="line">        <span class="keyword">else</span></div><div class="line">            <span class="keyword">return</span> <span class="string">"0"</span>.<span class="keyword">$this</span>-&gt;binEncode($number, $min, $mid,$bitcount<span class="number">-1</span>);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">    * decodes binary encoding of number as detailed in http://en.wikipedia.org/wiki/Geohash#Example</div><div class="line">    * removing the tail recursion is left an exercise for the reader</div><div class="line">    */</div><div class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">binDecode</span><span class="params">($binary, $min, $max)</span></span></div><div class="line">    &#123;</div><div class="line">        $mid=($min+$max)/<span class="number">2</span>;</div><div class="line">        </div><div class="line">        <span class="keyword">if</span> (strlen($binary)==<span class="number">0</span>)</div><div class="line">            <span class="keyword">return</span> $mid;</div><div class="line">            </div><div class="line">        $bit=substr($binary,<span class="number">0</span>,<span class="number">1</span>);</div><div class="line">        $binary=substr($binary,<span class="number">1</span>);</div><div class="line">        </div><div class="line">        <span class="keyword">if</span> ($bit==<span class="number">1</span>)</div><div class="line">            <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;binDecode($binary, $mid, $max);</div><div class="line">        <span class="keyword">else</span></div><div class="line">            <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;binDecode($binary, $min, $mid);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法/" rel="tag">#算法</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/11/hongbao-algorithm/" rel="next" title="一个红包算法">
+                <i class="fa fa-chevron-left"></i> 一个红包算法
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/16/geohash/"
+           data-title="geohash算法原理及实现方式" data-url="http://linxiang4200.github.io/2016/11/16/geohash/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://lh3.googleusercontent.com/-gs2w4OyR1DA/AAAAAAAAAAI/AAAAAAAAAAA/APaXHhRIQiWkL67DWx3qlCgAcrLNDKYM_A/s192-c-mo/photo.jpg"
+               alt="Lin Xiang" />
+          <p class="site-author-name" itemprop="name">Lin Xiang</p>
+          <p class="site-description motion-element" itemprop="description">wahahaaaaa</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#geohash有以下几个特点："><span class="nav-number">1.</span> <span class="nav-text">geohash有以下几个特点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Geohash的原理"><span class="nav-number">2.</span> <span class="nav-text">Geohash的原理</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Xiang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"linxiang4200"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
